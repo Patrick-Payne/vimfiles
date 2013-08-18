@@ -1,0 +1,92 @@
+# A header comment
+snippet head
+	/******************************************************************************
+	 * File: ${1}
+	 * Author: ${2: Patrick Payne}
+	 * Date Created: ${3}
+	 * Purpose: ${4}
+	******************************************************************************/ 
+
+# A verilog module
+snippet mod
+	/* ${1:module_name}: ${2:Brief Description} */
+	module $1 (
+	    ${3}
+	);
+	    ${4}
+	endmodule /* $1 */
+
+snippet always
+	always @(${1}) begin
+	    ${2}
+	end
+
+# A basic test bench template 
+snippet test 
+	/******************************************************************************
+	 * File: $1_tb.v
+	 * Author: ${2: Patrick Payne}
+	 * Date Created: ${3}
+	 * Purpose: To test the modules present in ${1:tested_file}.v
+	******************************************************************************/
+	'timescale 1 ns / 100 ps
+	'include "$1.v"
+
+	module $1_tb ();
+	    /* Inputs to the DUT */
+	    reg clk_$4;
+
+	    /* Outputs from the DUT */
+
+	    /* Instantiate the DUT */
+
+	    /* Create a ${4:50} MHz clock */
+	    always
+	        #${5:10} clk_$4 = ~clk_$4; /* Invert every $5 ns
+
+	    /* The actual test setup */
+	    initial begin
+	        $display($time, " << Starting the Simulation >> ");
+	        $dumpfile("${6:dump.vcd}");
+	        $dumpvars;
+
+	        /* Set initial values of inputs */
+	        clk_$4 = 1'b0;
+
+	        /* Finish the test */
+	        $display($time, " << Simulation Complete >>");
+	        $dumpflush;
+	        $finish;
+	    end
+			
+	    /* The assert task checks if a boolean is true, and if not prints a
+	     * message and exits.
+	     */
+	     task assert;
+	        input bool_value;
+	        input [100 * 8 : 0] message;
+	        begin
+	            if (!bool_value) begin
+	                $display("%s", message);
+	                $dumpflush;
+	                $finish;
+	            end
+	        end
+	    endtask
+	endmodule /* $1_tb */
+
+snippet assert
+	/* The assert task checks if a boolean is true, and if not prints a
+	 * message and exits.
+	 */
+	task assert;
+	    input bool_value;
+	    input [100 * 8 : 0] message;
+	    begin
+	        if (!bool_value) begin
+	            $display("%s", message);
+	            $dumpflush;
+	            $finish;
+	        end
+	    end
+	endtask
