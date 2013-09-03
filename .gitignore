@@ -1,1 +1,7 @@
-*/tags
+# Ignore tags files
+tags
+tags-ja
+
+# Ignore any history files
+.netrwhist
+
