@@ -13,7 +13,8 @@ snippet docs
 	'''
 	File: ${1:`Filename('$1.py', 'foo.py')`}
 	Author: ${2:`g:snips_author`}
-	Description: ${3}
+	Date Created: ${3:`strftime("%b %d, %Y")`}
+	Description: ${4}
 	'''
 snippet wh
 	while ${1:condition}:

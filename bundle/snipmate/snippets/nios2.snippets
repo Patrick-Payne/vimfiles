@@ -1,0 +1,104 @@
+# A header comment
+snippet head
+	/******************************************************************************
+	 * File: ${1:`Filename('$1.s', 'foo.s')`}
+	 * Author: ${2:`g:snips_author`}
+	 * Date Created: ${3:`strftime("%b %d, %Y")`}
+	 * Purpose: ${4}
+	 *****************************************************************************/ 
+	.text
+	.global _start
+snippet block
+	/******************************************************************************
+	 * ${1:Comment}
+	 *****************************************************************************/ 
+
+snippet ifelse
+	  b${1:neq} r${2:A}, r${3:B}, ${4:ELSE}
+	
+	${5:THEN}:
+	  ${7}
+	br $6
+	
+	$5:
+	  ${8}
+	
+	${6:AFTER}:
+	  ${9}
+
+snippet funfp
+	/* ${1:FUNCTION_NAME}: ${2:Description}
+	 * Arguments:
+	 *
+	 * Return Value:
+	 */
+	$1:
+	  # Adjust the stack pointer.
+	  subi sp, sp, ${3:FRAME_WIDTH}
+	  stw ra, ${4:FRAME_WIDTH - 4}(sp)
+	  stw fp, ${5:FRAME_WIDTH - 8}(sp)
+	
+	  # Set the new frame pointer position.
+	  addi fp, sp, $5
+	
+	  ${6:ACTUAL_CODE}
+	
+	  # Restore registers to their original values.
+	  ldw ra, 4(fp)
+	  ldw fp, 0(fp)
+
+	  addi sp, sp, $3
+	ret
+
+snippet fun
+	/* ${1:FUNCTION_NAME}: ${2:Description}
+	 * Arguments:
+	 *
+	 * Return Value:
+	 */
+	$1:
+	  # Save used registers.
+	  subi sp, sp, ${3:FRAME_WIDTH}
+	  stw ra, ${4:FRAME_WIDTH - 4}(sp)
+	
+	  ${6:ACTUAL_CODE}
+	
+	  # Restore used registers.
+	  ldw ra, ${4:FRAME_WIDTH - 4}(sp)
+	  addi sp, sp, $3
+	ret
+
+snippet int
+	.section .exceptions, "ax"
+	ISR:
+		subi sp, sp, 12
+		stw et, 0(sp)
+
+		rdctl et, ipending
+
+		# Only decrement ea if the interrupt was triggered externally.
+		beq et, r0, SKIP_EA_DEC
+		subi ea, ea, 4
+
+	SKIP_EA_DEC:
+		# Save the used registers on the stack.
+		stw ea, 4(sp)
+		stw ra, 8(sp)
+
+		beq et, r0, END_ISR
+			
+	  ${1:ACTUAL_CODE}
+
+	END_ISR:
+		ldw et, 0(sp)
+		ldw ea, 4(sp)
+		ldw ra, 8(sp)
+		ldw r4, 12(sp)
+		ldw r5, 16(sp)
+		ldw r8, 20(sp)
+		ldw r15, 24(sp)
+		ldw r16, 28(sp)
+		addi sp, sp, 32
+
+	eret
+	
